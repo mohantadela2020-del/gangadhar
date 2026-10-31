@@ -1,0 +1,94 @@
+import java.util.LinkedList;
+
+// Step-1: Define a PC class with a shared buffer and capacity
+class PC {
+    private final LinkedList<Integer> list = new LinkedList<>();
+    private final int capacity = 2; // Fixed capacity as per example
+
+    // Step-2: Implement the produce() method
+    public void produce() throws InterruptedException {
+        int value = 0;
+        while (true) {
+            synchronized (this) {
+                // If the buffer is full, producer waits
+                while (list.size() == capacity) {
+                    wait();
+                }
+
+                // Add an item to the buffer
+                list.add(value);
+                System.out.println("Producer produced-" + value);
+                value++;
+
+                // Notify the consumer that an item is available
+                notify();
+            }
+            // Sleep for 1 second outside the synchronized block
+            Thread.sleep(1000);
+        }
+    }
+
+    // Step-3: Implement the consume() method
+    public void consume() throws InterruptedException {
+        while (true) {
+            synchronized (this) {
+                // If the buffer is empty, consumer waits
+                while (list.size() == 0) {
+                    wait();
+                }
+
+                // Remove the first item from the buffer
+                int val = list.removeFirst();
+                System.out.println("Consumer consumed-" + val);
+
+                // Notify the producer that space is available
+                notify();
+            }
+            // Sleep for 1 second outside the synchronized block
+            Thread.sleep(1000);
+        }
+    }
+}
+
+// Step-4: Main class to instantiate and execute the threads
+public class Main {
+    public static void main(String[] args) {
+        PC pc = new PC();
+
+        // Create the Producer thread
+        Thread producerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    pc.produce();
+                } catch (InterruptedException e) {
+                    System.out.println("Producer interrupted.");
+                }
+            }
+        });
+
+        // Create the Consumer thread
+        Thread consumerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    pc.consume();
+                } catch (InterruptedException e) {
+                    System.out.println("Consumer interrupted.");
+                }
+            }
+        });
+
+        // Start both threads
+        producerThread.start();
+        consumerThread.start();
+
+        // Join both threads
+        try {
+            producerThread.join();
+            consumerThread.join();
+        } catch (InterruptedException e) {
+            System.out.println("Main thread interrupted.");
+        }
+    }
+}
