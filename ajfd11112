@@ -1,0 +1,132 @@
+// =========================================================================
+// METHOD 1: EXTENDING THE THREAD CLASS
+// =========================================================================
+class GoodMorningThread extends Thread {
+    @Override
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("Good Morning");
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            // Safe termination flag mapping
+        }
+    }
+}
+
+class HelloThread extends Thread {
+    @Override
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("Hello");
+                Thread.sleep(2000);
+            }
+        } catch (InterruptedException e) {
+            // Safe termination flag mapping
+        }
+    }
+}
+
+class WelcomeThread extends Thread {
+    @Override
+    public void run() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                System.out.println("Welcome");
+                Thread.sleep(3000);
+            }
+        } catch (InterruptedException e) {
+            // Safe termination flag mapping
+        }
+    }
+}
+
+// =========================================================================
+// METHOD 2: IMPLEMENTING THE RUNNABLE INTERFACE
+// =========================================================================
+class GoodMorningRunnable implements Runnable {
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                System.out.println("Good Morning");
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            // End gracefully when process closes
+        }
+    }
+}
+
+class HelloRunnable implements Runnable {
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                System.out.println("Hello");
+                Thread.sleep(2000);
+            }
+        } catch (InterruptedException e) {
+            // End gracefully when process closes
+        }
+    }
+}
+
+class WelcomeRunnable implements Runnable {
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                System.out.println("Welcome");
+                Thread.sleep(3000);
+            }
+        } catch (InterruptedException e) {
+            // End gracefully when process closes
+        }
+    }
+}
+
+// =========================================================================
+// MAIN CONTAINER INTERFACE (Main.java)
+// =========================================================================
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("--- EXECUTING METHOD 1: EXTENDING THREAD CLASS ---");
+        
+        // Method 1: Instantiate Thread child classes
+        GoodMorningThread t1 = new GoodMorningThread();
+        HelloThread t2 = new HelloThread();
+        WelcomeThread t3 = new WelcomeThread();
+        
+        // Start Method 1 execution flow
+        t1.start();
+        t2.start();
+        t3.start();
+
+        // Run Method 1 for 4 seconds to print required validation logs
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+        }
+
+        // Interrupt Method 1 threads cleanly to seamlessly demonstrate Method 2
+        t1.interrupt();
+        t2.interrupt();
+        t3.interrupt();
+
+        System.out.println("\n--- EXECUTING METHOD 2: IMPLEMENTING RUNNABLE INTERFACE ---");
+        
+        // Method 2: Instantiate Runnables and pass them to standard Thread objects
+        Thread r1 = new Thread(new GoodMorningRunnable());
+        Thread r2 = new Thread(new HelloRunnable());
+        Thread r3 = new Thread(new WelcomeRunnable());
+        
+        // Start Method 2 execution flow indefinitely
+        r1.start();
+        r2.start();
+        r3.start();
+    }
+}
