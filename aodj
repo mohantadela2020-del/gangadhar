@@ -1,0 +1,100 @@
+import java.util.LinkedList;
+
+// Step-1: Define a PC class
+class PC {
+    // A LinkedList<Integer> as the shared buffer and a fixed capacity of 2
+    private final LinkedList<Integer> list = new LinkedList<>();
+    private final int capacity = 2;
+
+    // Step-2: Implement the produce() method
+    public void produce() throws InterruptedException {
+        int value = 0;
+        while (true) { // Run an infinite loop
+            synchronized (this) { // Enter a synchronized block
+                // If the buffer is full (list.size() == capacity), call wait()
+                while (list.size() == capacity) {
+                    wait();
+                }
+
+                // Add an item to the buffer
+                list.add(value);
+                
+                // Print the exact requested message format
+                System.out.println("Producer produced-" + value);
+                value++;
+
+                // Call notify() to wake up the consumer
+                notify();
+            }
+            // Sleep for 1 second outside the synchronized block
+            Thread.sleep(1000);
+        }
+    }
+
+    // Step-3: Implement the consume() method
+    public void consume() throws InterruptedException {
+        while (true) { // Run an infinite loop
+            synchronized (this) { // Enter a synchronized block
+                // If the buffer is empty (list.size() == 0), call wait()
+                while (list.size() == 0) {
+                    wait();
+                }
+
+                // Remove the first item from the buffer
+                int val = list.removeFirst();
+                
+                // Print the exact requested message format
+                System.out.println("Consumer consumed-" + val);
+
+                // Call notify() to wake up the producer
+                notify();
+            }
+            // Sleep for 1 second outside the synchronized block
+            Thread.sleep(1000);
+        }
+    }
+}
+
+// Step-4: In the main method (using Main to match Main.java requirements)
+public class Main {
+    public static void main(String[] args) {
+        // Create an instance of PC
+        PC pc = new PC();
+
+        // Create the Producer thread
+        Thread producerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    pc.produce();
+                } catch (InterruptedException e) {
+                    System.out.println("Producer thread interrupted.");
+                }
+            }
+        });
+
+        // Create the Consumer thread
+        Thread consumerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    pc.consume();
+                } catch (InterruptedException e) {
+                    System.out.println("Consumer thread interrupted.");
+                }
+            }
+        });
+
+        // Start both threads
+        producerThread.start();
+        consumerThread.start();
+
+        // Join both threads
+        try {
+            producerThread.join();
+            consumerThread.join();
+        } catch (InterruptedException e) {
+            System.out.println("Main thread interrupted.");
+        }
+    }
+}
