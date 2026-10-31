@@ -1,0 +1,64 @@
+// Good Morning Runnable running every 1 second
+class GoodMorningRunnable implements Runnable {
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println("Good Morning");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Good Morning Thread interrupted.");
+                break;
+            }
+        }
+    }
+}
+
+// Hello Runnable running every 2 seconds
+class HelloRunnable implements Runnable {
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println("Hello");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                System.out.println("Hello Thread interrupted.");
+                break;
+            }
+        }
+    }
+}
+
+// Welcome Runnable running every 3 seconds
+class WelcomeRunnable implements Runnable {
+    @Override
+    public void run() {
+        while (true) {
+            System.out.println("Welcome");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                System.out.println("Welcome Thread interrupted.");
+                break;
+            }
+        }
+    }
+}
+
+// Main class matched to file name Main.java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Starting threads via Runnable Interface...");
+
+        // Creating Thread instances by passing the Runnable targets
+        Thread t1 = new Thread(new GoodMorningRunnable());
+        Thread t2 = new Thread(new HelloRunnable());
+        Thread t3 = new Thread(new WelcomeRunnable());
+
+        // Initiating concurrent execution
+        t1.start();
+        t2.start();
+        t3.start();
+    }
+}
